@@ -1,4 +1,3 @@
-const req = require('express/lib/request');
 const User = require('../models/user');
 
 const signup = async (req, res, next) => {
@@ -20,7 +19,7 @@ const signup = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try{
     const id = req.params.id;
-    const user = await User.findByIdAndUpdate(id);
+    const user = await User.findByIdAndUpdate(id, req.body);
     if(!user){
       console.error("No such user with that id")
     }
@@ -48,17 +47,29 @@ const deleteUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   try{
     const {email, password} = req.body
-    const user = await User.find({ email });
+    const user = await User.findOne({ email });
     if(!user){
-      console.error("No user with that email")
+      console.error("No user with that email");
+      res.status(404).json({
+        message: "No user with that email"
+      })
     }
     const pass = user.password;
     if(password !== pass){
-      console.error("Invalid credentials. Try again.")
+      res.status(400).json({
+        message: "Invalid credentials. Try again.",
+      });
     }
     res.status(200).json({
       message: "Successful login",
       user
     })
   }catch(err){}
+}
+
+module.exports = {
+  signup,
+  login,
+  updateUser,
+  deleteUser
 }

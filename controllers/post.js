@@ -58,8 +58,8 @@ const deletePost = async (req, res, next) => {
 
 const createPost = async (req, res, next) => {
   try{
-    const { title, content, category, tags } = req.body
-    const post = await Post.create({ title, content, category, tags})
+    const { title, content, category, tags, user } = req.body
+    const post = await Post.create({ title, content, category, tags, user})
     res.status(201).json({
       message: 'Post created',
       post
