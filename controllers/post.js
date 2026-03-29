@@ -3,7 +3,7 @@ const Post = require("../models/post");
 
 const getPosts = async (req, res, next) => {
   try{
-    const posts = await Post.find()
+    const posts = await Post.find().populate('user')
     res.status(200).json({
       message: "Successfully fetched posts",
       posts
@@ -16,7 +16,7 @@ const getPosts = async (req, res, next) => {
 const getPostById = async (req, res, next) => {
   try{
     const id = req.params.id;
-    const post = await Post.findById(id)
+    const post = await Post.findById(id).populate('user')
     if(!post){
       console.log("Post with that id does not exist")
     }
