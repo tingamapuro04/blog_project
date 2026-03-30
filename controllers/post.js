@@ -1,4 +1,3 @@
-const req = require("express/lib/request");
 const Post = require("../models/post");
 const AppError = require('../utils/AppError');
 
@@ -73,7 +72,7 @@ const getPostById = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
   try{
     const id = req.params.id;
-    const post = await Post.findByIdAndUpdate(id, req.body)
+    const post = await Post.findByIdAndUpdate(id, req.body, {returnDocument: 'after', runValidators: true })
     if(!post){
       console.log(`Post with id: ${id} does not exist`);
       throw new AppError(`Post with id: ${id} does not exist`, 404);

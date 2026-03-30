@@ -11,9 +11,6 @@ const getComments = async (req, res, next) => {
       throw new AppError("No post with that Id", 404)
     }
     const comments = await Comment.find({ post: postId})
-    if(comments.length < 1){
-      throw new AppError('No comments for this post yet', 404)
-    }
     res.status(200).json({
       comments
     })
@@ -25,7 +22,6 @@ const getComments = async (req, res, next) => {
 const createComment = async (req, res, next) => {
   try{
     const postId = req.params.postId;
-    console.log(postId)
     const { content, author } = req.body;
     const post = await Post.findById(postId);
     if(!post){

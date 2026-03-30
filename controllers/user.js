@@ -5,8 +5,7 @@ const signup = async (req, res, next) => {
   try{
     const {name, email, password, confirm_password} = req.body;
     if(password !== confirm_password){
-      console.error('Password has to match. Try again.');
-      throw new AppError("Password has to match. Try again.", 404);
+      throw new AppError("Password has to match. Try again.", 400);
     }
     let user = await User.create({name, email, password});
     res.status(201).json({
@@ -51,12 +50,7 @@ const login = async (req, res, next) => {
     const {email, password} = req.body
     const user = await User.findOne({ email });
     if(!user){
-      console.error("No user with that email");
-      throw new AppError("No user with that email", 404);
-    }
-    const pass = user.password;
-    if(password !== pass){
-      throw new AppError("Invalid credentials. Try again.", 400)
+      throw new AppError("No user with that email", 400);
     }
     res.status(200).json({
       message: "Successful login",

@@ -13,7 +13,7 @@ connect()
 app.use(express.json())
 app.use("/posts", postRoutes);
 app.use("/auth", userRoutes);
-app.use("/:postId/comments", commentRoutes);
+// app.use("/:postId/comments", commentRoutes);
 app.use(errorHandler)
 app.listen(port, () => {
   console.log(`App running on port http://localhost:${port}.`)
