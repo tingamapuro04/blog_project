@@ -4,11 +4,47 @@ const AppError = require('../utils/AppError');
 
 const getPosts = async (req, res, next) => {
   try{
-    const posts = await Post.find().populate('author');
+    let { page = 1, limit = 5, category, author, startDate, endDate } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit)
+
+    const filter = {};
+    if(author){
+      filter.author = author
+    }
+
+    if(category){
+      filter.category = category;
+    }
+
+    if(startDate || endDate){
+      filter.createdAt = {}
+    }
+
+    if(startDate){
+      filter.createdAt.$gte = new Date(startDate)
+    }
+
+    if(endDate){
+      filter.createdAt.$lte = new Date(endDate)
+    }
+
+    const posts = await Post.find(filter)
+      .select('title category')
+      .populate('author', 'name')
+      .limit(limit*1)
+      .skip((page-1)*limit)
+      .sort({ createdAt: -1 })
+      .lean()
+    const totalPosts = await Post.countDocuments(filter);
     res.status(200).json({
       message: "Successfully fetched posts",
-      posts
-    })
+      posts,
+      totalPages: Math.ceil(totalPosts / limit),
+      currentPage: page,
+      hasNextPage: page < Math.ceil(totalPosts / limit),
+      hasPrevPage: page > 1,
+    });
   }catch(err){
     next(err)
   }
