@@ -4,7 +4,9 @@ const postSchema = Joi.object({
   title: Joi.string().min(2).max(139).required(),
   content: Joi.string().min(10).required(),
   category: Joi.string().required(),
-  published: Joi.boolean()
+  published: Joi.boolean(),
+  author: Joi.string(),
+  tags: Joi.array()
 })
 
 const updatePostSchema = Joi.object({
