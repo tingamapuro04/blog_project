@@ -1,14 +1,19 @@
 const Comment = require("../models/comments")
-const {getPostById} = require('../controllers/post');
-const req = require("express/lib/request");
+const Post = require('../models/post');
+
 
 const getComments = async (req, res, next) => {
   try{
     const { postId } = req.params;
-    const post = getPostById(postId);
+    const post = await Post.findById(postId);
+    if(!post){
+      return es.status(404).json({
+        message: "Post with that id does not exist.",
+      });
+    }
     const comments = await Comment.find({ post: postId})
-    if(comments.length() < 1){
-      res.status(404).json({
+    if(comments.length < 1){
+      return res.status(404).json({
         message: "No comments for this post yet"
       })
     }
@@ -22,10 +27,16 @@ const getComments = async (req, res, next) => {
 
 const createComment = async (req, res, next) => {
   try{
-    const {postId} = req.params;
+    const postId = req.params.postId;
+    console.log(postId)
     const { content, author } = req.body;
-    const post = getPostById(postId);
-    const comment = await Comment.create({post: postId, author: author, content })
+    const post = await Post.findById(postId);
+    if(!post){
+      return res.status(404).json({
+        message: "No post with that id."
+      })
+    }
+    const comment = await Comment.create({post: postId, author, content })
     res.status(201).json({
       message: "Comment added!",
       comment
@@ -38,10 +49,15 @@ const createComment = async (req, res, next) => {
 const deleteComment = async (req, res, next) => {
   try{
     const {postId, id } = req.params;
-    const post = getPostById(postId);
+    const post = await Post.findById(postId);
+    if(!post){
+      return res.status(404).json({
+        message: "No post with that id"
+      })
+    }
     const comment = await Comment.findByIdAndDelete(id);
     if(!comment){
-      res.status(404).json({
+      return res.status(404).json({
         message: "No comment with that id"
       })
     }
